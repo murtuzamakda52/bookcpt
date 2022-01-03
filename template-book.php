@@ -1,26 +1,12 @@
 <?php get_header(); ?>
 <div class="main-element">
   <div class="left" style="background-color:#aaa;">
+  <input type="text" name="string" id="string"><input type="button" value="search" id="search"><br>
+    <input type="range" min="0" step="10" id="price_range">
     <?php 
-        $authors = 'Authors';
-        $terms = get_terms( $authors );
-        $count = count( $terms );
-
-        if ( $count > 0 ): ?>
-            <div class="post-tags">
-              <h3>Authors</h3>
-            <!-- <a href="" class="tax-filter" title="">all</a> -->
-            <?php
-            foreach ( $terms as $term ) {
-                $term_link = get_term_link( $term );
-                // echo '<a href="' . $term_link . '" class="tax-filter" title="' . $term->slug . '">' . $term->name . '</a> ';
-                echo '<label>'. $term->name.'</label><input type="checkbox" value="'.$term->slug.'" class="author filter"><br>'; } ?>
-            </div>
-            <hr>
-        <?php endif; 
-
-        $publishers = 'Publishers';
+        $publishers = 'publisher';
         $terms = get_terms( $publishers );
+        if($terms){
         $count = count( $terms );
 
         if ( $count > 0 ): ?>
@@ -34,7 +20,41 @@
                 echo '<label>'. $term->name.'</label><input type="checkbox" value="'.$term->slug.'" class="publisher filter"><br>';
             } ?>
             </div>
-        <?php endif; ?>
+        <?php endif; 
+
+    }
+
+    else{
+        echo "<h3 class='post-tags'>Publishers</h3><br><h4 class='post-tags'>No Publishers found</h4><br><hr>";
+    }
+    ?>
+	  
+	  <?php $authors = 'auth';
+        $terms = get_terms( $authors );
+        if($terms){
+
+
+
+        $count = count( $terms );
+
+        if ( $count > 0 ): ?>
+            <div class="post-tags">
+            <h3>Authors</h3>
+            <?php
+            foreach ( $terms as $term ) {
+                $term_link = get_term_link( $term );
+                // echo '<a href="' . $term_link . '" class="tax-filter" title="' . $term->slug . '">' . $term->name . '</a> ';
+
+                echo '<label>'. $term->name.'</label><input type="checkbox" value="'.$term->slug.'" class="author filter"><br>';
+            } ?>
+            </div>
+        <?php endif; } 
+
+        else{
+            echo "<h3 class='post-tags'>Author</h3><br><h4 class='post-tags'>No Author found <h4><br>";
+        }
+        ?>
+	  
   </div>
   <div class="middle" style="background-color:#ccc;">
     <?php
@@ -70,10 +90,5 @@
             </div>
         <?php endif; ?> 
   </div>  
-  <div class="right" style="background-color: #aaa;">
-    <input type="text" name="string" id="string"><input type="button" value="search" id="search"><br>
-    <input type="range" min="0" step="10" id="price_range">
-  </div>
 </div>
 <?php get_footer(); ?>
-

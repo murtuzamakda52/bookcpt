@@ -1,8 +1,8 @@
 <?php 
 /**
-* Plugin Name: book
+* Plugin Name: Book Cpt
 * Plugin URI: https://test-projext.000webhostapp.com/
-* Description: This is the very first plugin I ever created and this is a unique plugin because using .
+* Description: This is book cpt plugin, it comes with ajax search and filter functionlity. 
 * Version: 1.0
 * WC tested up to: 5.8.2
 * Author: Murtuza Makda(idrish)
@@ -17,7 +17,6 @@ function ajax_filter_posts_scripts() {
   wp_enqueue_style('post-style');
   wp_register_script('afp_script', plugins_url('/assets/ajax-filter-posts.js',__FILE__),array('jquery'), '', true);
   wp_enqueue_script('afp_script');
-
   wp_localize_script( 'afp_script', 'afp_vars', array(
         'afp_nonce'     => wp_create_nonce( 'afp_nonce' ), // Create nonce which we later will use to verify AJAX request
         'afp_ajax_url'  => admin_url( 'admin-ajax.php' ),
@@ -26,16 +25,11 @@ function ajax_filter_posts_scripts() {
 }
 add_action('wp_enqueue_scripts', 'ajax_filter_posts_scripts', 100);
 
-
 add_action('init', 'create_custom_post_type_book');
 add_action('init','add_publisher_taxonomy_to_post');
 add_action('init','add_author_taxonomy_to_post');
-
-
-
-
-
 add_filter('use_block_editor_for_post_type', 'prefix_disable_gutenberg_for_book', 10, 2);
+
 function prefix_disable_gutenberg_for_book($current_status, $post_type)
 {
     if ($post_type === 'book') return false;
@@ -93,20 +87,22 @@ $args = array(
 );
  
 register_post_type('book', $args);
+global $wp_rewrite; 
+$wp_rewrite->flush_rules( true );
 }
 
 //create a function that will attach our new 'member' taxonomy to the 'post' post type
 function add_publisher_taxonomy_to_post(){
 
     //set the name of the taxonomy
-    $taxonomy1 = 'Publishers';
+    $taxonomy1 = 'publisher';
     //set the post types for the taxonomy
     $object_type1 = 'book';
     
     //populate our array of names for our taxonomy
     $labels = array(
         'name'               => 'Publishers',
-        'singular_name'      => 'Publishers',
+        'singular_name'      => 'Publisher',
         'search_items'       => 'Search Publishers',
         'all_items'          => 'All Publishers',
         'parent_item'        => 'Parent Publishers',
@@ -115,7 +111,9 @@ function add_publisher_taxonomy_to_post(){
         'edit_item'          => 'Edit Publishers',
         'add_new_item'       => 'Add New Publishers', 
         'new_item_name'      => 'New Publishers Name',
-        'menu_name'          => 'Publishers'
+        'menu_name'          => 'Publishers',
+    'not_found'          => __( 'No Publishers found'),
+        'not_found_in_trash' => __( 'No found in Trash')
     );
     
     //define arguments to be used 
@@ -138,14 +136,14 @@ function add_publisher_taxonomy_to_post(){
 function add_author_taxonomy_to_post(){
 
     //set the name of the taxonomy
-    $taxonomy2 = 'Authors';
+    $taxonomy2 = 'auth';
     //set the post types for the taxonomy
     $object_type2 = 'book';
     
     //populate our array of names for our taxonomy
     $labels = array(
         'name'               => 'Authors',
-        'singular_name'      => 'Authors',
+        'singular_name'      => 'Author',
         'search_items'       => 'Search Authors',
         'all_items'          => 'All Authors',
         'parent_item'        => 'Parent Authors',
@@ -154,7 +152,9 @@ function add_author_taxonomy_to_post(){
         'edit_item'          => 'Edit Authors',
         'add_new_item'       => 'Add New Authors', 
         'new_item_name'      => 'New Authors Name',
-        'menu_name'          => 'Authors'
+        'menu_name'          => 'Authors',
+    'not_found'          => __( 'No Authors found'),
+        'not_found_in_trash' => __( 'No found in Trash')
     );
     
     //define arguments to be used 
@@ -166,7 +166,7 @@ function add_author_taxonomy_to_post(){
         'public'            => true,
         'show_admin_column' => true,
         'query_var'         => true,
-        'rewrite'           => array('slug' => 'author')
+        'rewrite'           => array('slug' => 'auth')
     );
     
     //call the register_taxonomy function
@@ -211,6 +211,7 @@ function add_metabox_post_price_widget()
 }
 
 function enable_post_price_widget(){
+  wp_nonce_field('my_custom_page', '_my_custom_page');
   global $post;
   $image=get_post_custom($post->ID );
   $price = $image ? $image['price'][0] : '';
@@ -222,11 +223,8 @@ function enable_post_price_widget(){
 */
 function save_metabox_post_price_widget($post_id)
 {
-    // Bail if we're doing an auto save
-    if( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
-
+	if (!wp_verify_nonce( $_POST['_my_custom_page'], 'my_custom_page' )) { return $post_id; }
     $price = isset($_POST['price']) ? $_POST['price']:'';
-
     update_post_meta( $post_id, 'price', $price );
 }
 
@@ -242,37 +240,37 @@ function searchform( ) {
 add_shortcode('search','searchform');
 
 
-function ajax_filter_get_posts( $author ) {
+function ajax_filter_get_posts() {
 
+  $authors = $_POST['author'];
   $paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
 
   // Verify nonce
   if( !isset( $_POST['afp_nonce'] ) || !wp_verify_nonce( $_POST['afp_nonce'], 'afp_nonce' ) )
     die('Permission denied');
 
-  $authors    = $_POST['author'];
   $publishers = $_POST['publishers'];
+  
+
   $page_no    = $_POST['page'];
   $search     = $_POST['search'];
+  
   // WP Query
   $args = array(
-    'Authors'       => $authors,
-    'Publishers'    => $publishers,
+    'publisher'    => $publishers,
+    'auth' => $authors,
     'post_type'     => 'book',
     'posts_per_page' => 6,
     'order'         =>'ASC',
     'paged'         => $page_no,
     's'             => $search
+
   );
   
-  // If taxonomy is not set, remove key from array and get all posts
-  if( !$authors ) {
-    unset( $args['tag'] );
-  }
-
   $query = new WP_Query( $args );
 
-
+  
+  
 
   if ( $query->have_posts() ) : while ( $query->have_posts() ) : $query->the_post(); ?>
     <div class="single-portfolio" data-page="<?php echo $page_no; ?>" data-maxpage="<?php echo $query->max_num_pages; ?>">
@@ -294,6 +292,38 @@ function ajax_filter_get_posts( $author ) {
 
 add_action('wp_ajax_filter_posts', 'ajax_filter_get_posts');
 add_action('wp_ajax_nopriv_filter_posts', 'ajax_filter_get_posts');
+
+add_filter( 'manage_book_posts_columns', 'smashing_filter_posts_columns' );
+function smashing_filter_posts_columns( $columns ){
+  $columns['price'] = __( 'Price', 'smashing' );
+  return $columns;
+}
+
+add_action( 'manage_book_posts_custom_column', 'smashing_realestate_column', 10, 2);
+function smashing_realestate_column( $column, $post_id ) {
+  // Image column
+   $price = get_post_meta( $post_id, 'price', true );
+    if ( ! $price ) {
+      _e( 'n/a' );  
+    } else {
+      echo 'RS ' . number_format( $price, 0, '.', ',' );
+    }
+}
+
+
+function some_function()
+{
+  $post_details = array(
+  'post_title'    => 'Book Cpt Search page',
+  'post_content'  => '[search]',
+  'post_status'   => 'publish',
+  'post_author'   => 1,
+  'post_type' => 'page'
+   );
+   wp_insert_post( $post_details );
+}
+
+register_activation_hook(__FILE__, 'some_function');
 
 
 
