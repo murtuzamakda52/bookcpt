@@ -19,8 +19,8 @@ function ajax_filter_posts_scripts() {
   wp_enqueue_script('afp_script');
 
   wp_localize_script( 'afp_script', 'afp_vars', array(
-        'afp_nonce' => wp_create_nonce( 'afp_nonce' ), // Create nonce which we later will use to verify AJAX request
-        'afp_ajax_url' => admin_url( 'admin-ajax.php' ),
+        'afp_nonce'     => wp_create_nonce( 'afp_nonce' ), // Create nonce which we later will use to verify AJAX request
+        'afp_ajax_url'  => admin_url( 'admin-ajax.php' ),
       )
   );
 }
@@ -57,53 +57,51 @@ $supports = array(
 );
  
 $labels = array(
-'name' => _x('Books', 'plural'),
-'singular_name' => _x('Book', 'singular'),
-'menu_name' => _x('Books', 'admin menu'),
+'name'           => _x('Books', 'plural'),
+'singular_name'  => _x('Book', 'singular'),
+'menu_name'      => _x('Books', 'admin menu'),
 'name_admin_bar' => _x('Book', 'admin bar'),
-'add_new' => _x('Add Book', 'add new'),
-'add_new_item' => __('Add New Book'),
-'new_item' => __('New Book'),
-'edit_item' => __('Edit Book'),
-'view_item' => __('View Book'),
-'all_items' => __('All Book'),
-'search_items' => __('Search Book'),
-'not_found' => __('No Book found.'),
+'add_new'        => _x('Add Book', 'add new'),
+'add_new_item'   => __('Add New Book'),
+'new_item'       => __('New Book'),
+'edit_item'      => __('Edit Book'),
+'view_item'      => __('View Book'),
+'all_items'      => __('All Book'),
+'search_items'   => __('Search Book'),
+'not_found'      => __('No Book found.'),
 );
  
 $args = array(
-'supports' => $supports,
-'labels' => $labels,
-'description' => 'Holds our book and specific data',
-'public' => true,
-'taxonomies' => array( 'Authors', 'Publishers' ),
-'show_ui' => true,
-'show_in_menu' => true,
+'supports'          => $supports,
+'labels'            => $labels,
+'description'       => 'Holds our book and specific data',
+'public'            => true,
+'taxonomies'        => array( 'Authors', 'Publishers' ),
+'show_ui'           => true,
+'show_in_menu'      => true,
 'show_in_nav_menus' => true,
 'show_in_admin_bar' => true,
-'can_export' => true,
-'capability_type' => 'post',
-'show_in_rest' => true,
-'query_var' => true,
-'rewrite' => array('slug' => 'book'),
-'has_archive' => true,
-'hierarchical' => false,
-'menu_position' => 6,
-'menu_icon' => 'dashicons-book',
+'can_export'        => true,
+'capability_type'   => 'post',
+'show_in_rest'      => true,
+'query_var'         => true,
+'rewrite'           => array('slug' => 'book'),
+'has_archive'       => true,
+'hierarchical'      => false,
+'menu_position'     => 6,
+'menu_icon'         => 'dashicons-book',
 );
  
-register_post_type('book', $args); 
-global $wp_rewrite; 
-$wp_rewrite->flush_rules( true );
+register_post_type('book', $args);
 }
 
 //create a function that will attach our new 'member' taxonomy to the 'post' post type
 function add_publisher_taxonomy_to_post(){
 
     //set the name of the taxonomy
-    $taxonomy = 'Publishers';
+    $taxonomy1 = 'Publishers';
     //set the post types for the taxonomy
-    $object_type = 'book';
+    $object_type1 = 'book';
     
     //populate our array of names for our taxonomy
     $labels = array(
@@ -121,7 +119,7 @@ function add_publisher_taxonomy_to_post(){
     );
     
     //define arguments to be used 
-    $args = array(
+    $args1 = array(
         'labels'            => $labels,
         'hierarchical'      => true,
         'show_ui'           => true,
@@ -133,16 +131,16 @@ function add_publisher_taxonomy_to_post(){
     );
     
     //call the register_taxonomy function
-    register_taxonomy($taxonomy, $object_type, $args); 
+    register_taxonomy($taxonomy1, $object_type1, $args1); 
 }
 
 
 function add_author_taxonomy_to_post(){
 
     //set the name of the taxonomy
-    $taxonomy = 'Authors';
+    $taxonomy2 = 'Authors';
     //set the post types for the taxonomy
-    $object_type = 'book';
+    $object_type2 = 'book';
     
     //populate our array of names for our taxonomy
     $labels = array(
@@ -160,7 +158,7 @@ function add_author_taxonomy_to_post(){
     );
     
     //define arguments to be used 
-    $args = array(
+    $args2 = array(
         'labels'            => $labels,
         'hierarchical'      => true,
         'show_ui'           => true,
@@ -172,7 +170,7 @@ function add_author_taxonomy_to_post(){
     );
     
     //call the register_taxonomy function
-    register_taxonomy($taxonomy, $object_type, $args); 
+    register_taxonomy($taxonomy2, $object_type2, $args2); 
 }
 
 add_filter( 'template_include', 'my_book_templates' );
@@ -188,11 +186,6 @@ function my_book_templates( $template ) {
     }
     return $template;
 }
-
-
-
-
-
 
 function template_chooser($template)   
 {    
@@ -220,8 +213,8 @@ function add_metabox_post_price_widget()
 function enable_post_price_widget(){
   global $post;
   $image=get_post_custom($post->ID );
-  $price = $image['price'][0];
-  echo "<input type='text' name='price' value='".$price."'>";
+  $price = $image ? $image['price'][0] : '';
+  echo "<input type='number' name='price' value='".$price."' required>";
 }
 
 /*
@@ -231,9 +224,6 @@ function save_metabox_post_price_widget($post_id)
 {
     // Bail if we're doing an auto save
     if( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
-
-    // if our current user can't edit this post, bail
-    if( !current_user_can( 'edit_post' ) ) return;
 
     $price = isset($_POST['price']) ? $_POST['price']:'';
 
@@ -260,19 +250,19 @@ function ajax_filter_get_posts( $author ) {
   if( !isset( $_POST['afp_nonce'] ) || !wp_verify_nonce( $_POST['afp_nonce'], 'afp_nonce' ) )
     die('Permission denied');
 
-  $authors = $_POST['author'];
+  $authors    = $_POST['author'];
   $publishers = $_POST['publishers'];
-  $page_no  = $_POST['page'];
-  $search = $_POST['search'];
+  $page_no    = $_POST['page'];
+  $search     = $_POST['search'];
   // WP Query
   $args = array(
-    'Authors' => $authors,
-    'Publishers' => $publishers,
-    'post_type' => 'book',
+    'Authors'       => $authors,
+    'Publishers'    => $publishers,
+    'post_type'     => 'book',
     'posts_per_page' => 6,
-    'order' =>'ASC',
-    'paged' => $page_no,
-    's' => $search
+    'order'         =>'ASC',
+    'paged'         => $page_no,
+    's'             => $search
   );
   
   // If taxonomy is not set, remove key from array and get all posts
@@ -283,8 +273,9 @@ function ajax_filter_get_posts( $author ) {
   $query = new WP_Query( $args );
 
 
+
   if ( $query->have_posts() ) : while ( $query->have_posts() ) : $query->the_post(); ?>
-    <div class="single-portfolio" data-page="<?php echo $page_no; ?>">
+    <div class="single-portfolio" data-page="<?php echo $page_no; ?>" data-maxpage="<?php echo $query->max_num_pages; ?>">
     <h2><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
     <?php the_excerpt(); ?>
      <?php $value=get_post_custom($post->ID );

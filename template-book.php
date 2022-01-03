@@ -12,7 +12,7 @@
             <!-- <a href="" class="tax-filter" title="">all</a> -->
             <?php
             foreach ( $terms as $term ) {
-                $term_link = get_term_link( $term, $tax );
+                $term_link = get_term_link( $term );
                 // echo '<a href="' . $term_link . '" class="tax-filter" title="' . $term->slug . '">' . $term->name . '</a> ';
                 echo '<label>'. $term->name.'</label><input type="checkbox" value="'.$term->slug.'" class="author filter"><br>'; } ?>
             </div>
@@ -28,7 +28,7 @@
             <h3>Publishers</h3>
             <?php
             foreach ( $terms as $term ) {
-                $term_link = get_term_link( $term, $tax );
+                $term_link = get_term_link( $term );
                 // echo '<a href="' . $term_link . '" class="tax-filter" title="' . $term->slug . '">' . $term->name . '</a> ';
 
                 echo '<label>'. $term->name.'</label><input type="checkbox" value="'.$term->slug.'" class="publisher filter"><br>';
@@ -53,7 +53,7 @@
             <div class="single-portfolio" data-page="1">
             <h2><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
             <?php the_excerpt(); ?>
-            <?php $value=get_post_custom($post->ID );
+            <?php $value = get_post_custom(get_the_ID());
            $price = $value['price'][0];
            echo 'Rs <span class="price">'.$price.'</span>';
            ?>
@@ -75,4 +75,5 @@
     <input type="range" min="0" step="10" id="price_range">
   </div>
 </div>
+<?php get_footer(); ?>
 

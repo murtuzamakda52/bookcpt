@@ -39,6 +39,15 @@ jQuery(document).ready(function($) {
                 $('.tagged-posts').html( response );
                 // Restore div visibility
                 $('.tagged-posts').fadeIn();
+                var loadmore = $('.single-portfolio').attr('data-maxpage');
+                console.log(parseInt(loadmore));
+                if(parseInt(loadmore) > 1)
+                {
+                   jQuery('#loadmore').css('display','block');
+                }
+                else{
+                   jQuery('#loadmore').css('display','none');
+                }
                 
             };
         });
@@ -72,7 +81,15 @@ jQuery(document).ready(function($) {
                 // Restore div visibility
                 $('.tagged-posts').fadeIn();
                 $('.single-portfolio').attr('data-page',parseInt(page_no)+1);
-                
+               var loadmore = $('.single-portfolio').attr('data-maxpage');
+               console.log(parseInt(loadmore));
+                if(parseInt(loadmore) > 1)
+                {
+                   jQuery('#loadmore').css('display','block');
+                }
+                else{
+                   jQuery('#loadmore').css('display','none');
+                }
             };
         });
     });
@@ -80,10 +97,12 @@ jQuery(document).ready(function($) {
 
     jQuery('#search').click(function() {
        var search = $('#string').val();
+       var page_no = $('.single-portfolio').attr('data-page');
         data = {
             action: 'filter_posts', // function to execute
             afp_nonce: afp_vars.afp_nonce, // wp_nonce
-            search:search
+            search:search,
+            page: parseInt(page_no)
             };
         $.post( afp_vars.afp_ajax_url, data, function(response) {
  
@@ -92,7 +111,14 @@ jQuery(document).ready(function($) {
                 $('.tagged-posts').html( response );
                 // Restore div visibility
                 $('.tagged-posts').fadeIn();
-                
+               var loadmore = $('.single-portfolio').attr('data-maxpage');
+                if(parseInt(loadmore) > 1)
+                {
+                   jQuery('#loadmore').css('display','block');
+                }
+                else{
+                   jQuery('#loadmore').css('display','none');
+                }
             };
         });
     });
