@@ -1,5 +1,18 @@
 jQuery(document).ready(function($) {
-
+	
+	
+    var big_value_array = [];
+    $('.price').each(function(){
+       var price_range = parseInt($(this).text());
+		big_value_array.push(price_range);
+		var bigest_value = Math.max.apply(Math,big_value_array);
+		jQuery('#price_range').attr('max',bigest_value);
+		jQuery('.max-value').text(bigest_value);
+	
+	});
+	
+	
+	
     var selecetd_author = [];
     var selecetd_publisher = [];
     jQuery('input:checkbox.filter').click(function() {
@@ -40,7 +53,14 @@ jQuery(document).ready(function($) {
                 // Restore div visibility
                 $('.tagged-posts').fadeIn();
                 var loadmore = $('.single-portfolio').attr('data-maxpage');
-                console.log(parseInt(loadmore));
+                var big_value_array = [];
+				$('.price').each(function(){
+					var price_range = parseInt($(this).text());
+					big_value_array.push(price_range);
+					var bigest_value = Math.max.apply(Math,big_value_array);
+					jQuery('#price_range').attr('max',bigest_value);
+					jQuery('.max-value').text(bigest_value);
+				});
                 if(parseInt(loadmore) > 1)
                 {
                    jQuery('#loadmore').css('display','block');
@@ -82,7 +102,14 @@ jQuery(document).ready(function($) {
                 $('.tagged-posts').fadeIn();
                 $('.single-portfolio').attr('data-page',parseInt(page_no)+1);
                var loadmore = $('.single-portfolio').attr('data-maxpage');
-               console.log(parseInt(loadmore));
+               var big_value_array = [];
+				$('.price').each(function(){
+					var price_range = parseInt($(this).text());
+					big_value_array.push(price_range);
+					var bigest_value = Math.max.apply(Math,big_value_array);
+					jQuery('#price_range').attr('max',bigest_value);
+					jQuery('.max-value').text(bigest_value);
+				});
                 if(parseInt(loadmore) > 1)
                 {
                    jQuery('#loadmore').css('display','block');
@@ -127,15 +154,15 @@ jQuery(document).ready(function($) {
  jQuery( document ).on( "change", "#price_range", function(){
 
     var finalvalue = parseInt($(this).val());
+	 jQuery('.range').text(finalvalue);
 
     $('.price').each(function(){
-         console.log($(this).text());
-
        var price_range = parseInt($(this).text());
        $(this).closest('.single-portfolio').show();
-       if(price_range < finalvalue)
-
+		
+       if(price_range <= finalvalue-10)
         $(this).closest('.single-portfolio').hide();
+		jQuery('#loadmore').css('display','none');
        });
 });
 

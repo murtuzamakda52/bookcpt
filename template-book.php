@@ -2,7 +2,7 @@
 <div class="main-element">
   <div class="left" style="background-color:#aaa;">
   <input type="text" name="string" id="string"><input type="button" value="search" id="search"><br>
-    <input type="range" min="0" step="10" id="price_range">
+	  <div style="display:flex"><input type="range" min="0" step="10" id="price_range"><div class="range"></div><div class="max-text">Max value : <span class="max-value"></span></div></div>
     <?php 
         $publishers = 'publisher';
         $terms = get_terms( $publishers );

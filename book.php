@@ -13,7 +13,7 @@
 
 
 function ajax_filter_posts_scripts() {
-  wp_register_style('post-style', plugins_url('/assets/wp-post.css',__FILE__));
+  wp_register_style('post-style', plugins_url('/assets/wp-post.css',__FILE__), array(), '2.0');
   wp_enqueue_style('post-style');
   wp_register_script('afp_script', plugins_url('/assets/ajax-filter-posts.js',__FILE__),array('jquery'), '', true);
   wp_enqueue_script('afp_script');
@@ -223,9 +223,12 @@ function enable_post_price_widget(){
 */
 function save_metabox_post_price_widget($post_id)
 {
+
+	if( isset($_POST['_my_custom_page'])){
 	if (!wp_verify_nonce( $_POST['_my_custom_page'], 'my_custom_page' )) { return $post_id; }
     $price = isset($_POST['price']) ? $_POST['price']:'';
     update_post_meta( $post_id, 'price', $price );
+	}
 }
 
 
