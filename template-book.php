@@ -1,7 +1,25 @@
-<?php get_header(); ?>
+<?php get_header(); 
+
+	$min_value = esc_attr( get_option('min_range') ) ? esc_attr( get_option('min_range') ) : '0';
+	$max_value = esc_attr( get_option('max_range') ) ? esc_attr( get_option('max_range') ) : '1000';
+
+
+?>
 <div class="main-element">
   <div class="left" style="background-color:#aaa;">
   <input type="text" name="string" id="string"><input type="button" value="search" id="search"><br>
+	  
+	  
+	  
+	   <div data-role="rangeslider">
+        <label for="price-min">Price:</label>
+        <input type="range" class="range-meter" name="price-min" id="min_range" value="200" min="<?php echo $min_value; ?>" max="<?php echo $max_value; ?>">
+        <label for="price-max">Price:</label>
+        <input type="range" class="range-meter" name="price-max" id="max_range" value="800" min="<?php echo $min_value; ?>" max="<?php echo $max_value; ?>">
+      </div>
+	  
+	  
+	  
 	  <div style="display:flex"><input type="range" min="0" step="10" id="price_range"><div class="range"></div><div class="max-text">Max value : <span class="max-value"></span></div></div>
     <?php 
         $publishers = 'publisher';
@@ -51,7 +69,7 @@
         <?php endif; } 
 
         else{
-            echo "<h3 class='post-tags'>Author</h3><br><h4 class='post-tags'>No Author found <h4><br>";
+            echo "<h3 class='post-tags'>Author</h3><br><h4 class='post-tags'>No Authors found <h4><br>";
         }
         ?>
 	  
@@ -59,10 +77,10 @@
   <div class="middle" style="background-color:#ccc;">
     <?php
     $paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
-
+	$post_per_pages = esc_attr( get_option('post_per_page') ) ? esc_attr( get_option('post_per_page') ) : '6';
     $args = array(
             'post_type' => 'book',
-            'posts_per_page' => 6,
+            'posts_per_page' => $post_per_pages,
             'order' =>'ASC',
             'paged' => $paged,
         );
@@ -75,7 +93,7 @@
             <?php the_excerpt(); ?>
             <?php $value = get_post_custom(get_the_ID());
            $price = $value['price'][0];
-           echo 'Rs <span class="price">'.$price.'</span>';
+           echo '₹ <span class="price">'.$price.'</span>';
            ?>
             </div>
 

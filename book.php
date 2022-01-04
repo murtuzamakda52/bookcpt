@@ -1,6 +1,6 @@
 <?php 
 /**
-* Plugin Name: Book Cpt
+* Plugin Name: Book Filter
 * Plugin URI: https://test-projext.000webhostapp.com/
 * Description: This is book cpt plugin, it comes with ajax search and filter functionlity. 
 * Version: 1.0
@@ -22,6 +22,12 @@ function ajax_filter_posts_scripts() {
         'afp_ajax_url'  => admin_url( 'admin-ajax.php' ),
       )
   );
+	
+  wp_register_style('jquery-mobile-style','https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css');
+  wp_enqueue_style('jquery-mobile-style');
+  wp_register_script('jquery-mobile-script', 'https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js' ,array('jquery'), '', true);
+  wp_enqueue_script('jquery-mobile-script');
+	
 }
 add_action('wp_enqueue_scripts', 'ajax_filter_posts_scripts', 100);
 
@@ -281,14 +287,14 @@ function ajax_filter_get_posts() {
     <?php the_excerpt(); ?>
      <?php $value=get_post_custom($post->ID );
            $price = $value['price'][0];
-           echo 'Rs <span class="price">'.$price.'</span>';
+           echo '₹ <span class="price">'.$price.'</span>';
            ?>
     </div>
 
   <?php endwhile; ?>
   
   <?php else: ?>
-    <h2 class="center-text">No posts found</h2>
+    <h2 class="center-text">No Books found</h2>
   <?php endif;
   die();
 }
@@ -309,7 +315,7 @@ function smashing_realestate_column( $column, $post_id ) {
     if ( ! $price ) {
       _e( 'n/a' );  
     } else {
-      echo 'RS ' . number_format( $price, 0, '.', ',' );
+      echo '₹ ' . number_format( $price, 0, '.', ',' );
     }
 }
 
@@ -327,6 +333,64 @@ function some_function()
 }
 
 register_activation_hook(__FILE__, 'some_function');
+
+
+function remove_my_post_metaboxes() {
+remove_meta_box( 'authordiv','book','normal' ); // Author Metabox
+remove_meta_box( 'postcustom','book','normal' ); // Custom Fields Metabox
+remove_meta_box( 'commentstatusdiv','book','normal' ); // Comments Status Metabox
+remove_meta_box( 'commentsdiv','book','normal' ); // Comments Metabox
+remove_meta_box( 'postexcerpt','book','normal' ); // Excerpt Metabox
+remove_meta_box( 'revisionsdiv','book','normal' ); // Revisions Metabox
+
+}
+add_action('admin_menu','remove_my_post_metaboxes');
+function myplugin_menu() {
+    add_submenu_page( 'edit.php?post_type=book','Book Filter Option', 'Book Option', 'add_users', __FILE__, 'book_filter_custom_options',4 );
+}
+add_action('admin_menu', 'myplugin_menu');
+
+function book_filter_custom_options(){
+?>
+<form method="post" action="options.php">
+	<?php settings_fields('book_filter_min_max_post');
+			do_settings_sections('book_filter_min_max_post');
+	?>
+	<div class="wrap">
+		<input type="text" name="post_per_page" value="<?php echo esc_attr( get_option('post_per_page') ); ?>">
+		<label>Min Range Value</label>
+		<input type="number" class="range-meter" name="min_range" id="min_range" value="<?php echo esc_attr( get_option('min_range') ); ?>">
+		<label>max Range Value</label>
+		<input type="number" class="range-meter" name="max_range" id="max_range" value="<?php echo esc_attr( get_option('max_range') ); ?>">
+		<?php submit_button(); ?>
+	</div>
+</form>
+<?php
+}
+add_action('admin_init','register_book_filter_value');
+
+function register_book_filter_value(){
+	register_setting('book_filter_min_max_post','post_per_page');
+	register_setting('book_filter_min_max_post','min_range');
+	register_setting('book_filter_min_max_post','max_range');
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

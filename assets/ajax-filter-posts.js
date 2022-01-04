@@ -151,16 +151,15 @@ jQuery(document).ready(function($) {
     });
 
 
- jQuery( document ).on( "change", "#price_range", function(){
+ jQuery( document ).on( "change", ".range-meter", function(){
 
-    var finalvalue = parseInt($(this).val());
-	 jQuery('.range').text(finalvalue);
-
+    var min_value = parseInt($('#min_range').val());
+	var max_value = parseInt($('#max_range').val());
     $('.price').each(function(){
        var price_range = parseInt($(this).text());
        $(this).closest('.single-portfolio').show();
 		
-       if(price_range <= finalvalue-10)
+       if(price_range <= min_value && price_range <= max_value-10 )
         $(this).closest('.single-portfolio').hide();
 		jQuery('#loadmore').css('display','none');
        });
