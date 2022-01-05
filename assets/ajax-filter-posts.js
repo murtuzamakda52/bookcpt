@@ -128,6 +128,19 @@ jQuery(document).ready(function($) {
             };
         });
     });
+	
+	
+	
+	
+	
+	$('#string').bind('keyup', function(e){
+   if((e.type === 'keyup' && e.which === 13) ){
+     $( "#search" ).trigger( "click" );
+   }
+});
+	
+	
+
 
 
 jQuery( document ).on( "change", ".range-meter", function(){
