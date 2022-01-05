@@ -59,7 +59,7 @@ $supports = array(
 $labels = array(
 'name'           => _x('Books', 'plural'),
 'singular_name'  => _x('Book', 'singular'),
-'menu_name'      => _x('Books', 'admin menu'),
+'menu_name'      => _x('Books Filter', 'admin menu'),
 'name_admin_bar' => _x('Book', 'admin bar'),
 'add_new'        => _x('Add Book', 'add new'),
 'add_new_item'   => __('Add New Book'),
@@ -237,12 +237,7 @@ function save_metabox_post_price_widget($post_id)
 	}
 }
 
-
-
-
 function searchform( ) {
-
-   
     return include(plugin_dir_path(__FILE__) . 'template-book.php');
 }
 
@@ -263,13 +258,13 @@ function ajax_filter_get_posts() {
 
   $page_no    = $_POST['page'];
   $search     = $_POST['search'];
-  
+  $post_per_pages = esc_attr( get_option('post_per_page') ) ? esc_attr( get_option('post_per_page') ) : '6';
   // WP Query
   $args = array(
     'publisher'    => $publishers,
     'auth' => $authors,
     'post_type'     => 'book',
-    'posts_per_page' => 6,
+    'posts_per_page' => $post_per_pages,
     'order'         =>'ASC',
     'paged'         => $page_no,
     's'             => $search
@@ -323,7 +318,7 @@ function smashing_realestate_column( $column, $post_id ) {
 function some_function()
 {
   $post_details = array(
-  'post_title'    => 'Book Cpt Search page',
+  'post_title'    => 'Book Filter Search page',
   'post_content'  => '[search]',
   'post_status'   => 'publish',
   'post_author'   => 1,
@@ -357,6 +352,7 @@ function book_filter_custom_options(){
 			do_settings_sections('book_filter_min_max_post');
 	?>
 	<div class="wrap">
+		<h1>Book Filter Settings</h1>
 		<input type="text" name="post_per_page" value="<?php echo esc_attr( get_option('post_per_page') ); ?>">
 		<label>Min Range Value</label>
 		<input type="number" class="range-meter" name="min_range" id="min_range" value="<?php echo esc_attr( get_option('min_range') ); ?>">
@@ -375,23 +371,74 @@ function register_book_filter_value(){
 	register_setting('book_filter_min_max_post','max_range');
 }
 
+    function wpar_add_quick_edit($column_name, $post_type)
+    {
+        switch ($column_name) {
+            case 'price':
+                echo '<fieldset class="inline-edit-col-right" style="border: 1px solid #dddddd;">
+                        <legend style="font-weight: bold; margin-left: 10px;">Book Custom Fields:</legend>
+                        <div class="inline-edit-col">';
+                wp_nonce_field('wpar_q_edit_nonce', 'wpar_nonce');
+                echo '<label class="alignleft" style="width: 100%;">
+                        <span class="title">' . __('Price', 'your-textdomain') . '</span>
+                        <span class="input-text-wrap"><input type="number" name="' . $column_name . '" value="" style="width: 100%;"></span>
+                        <span style="font-style: italic;color:#999999; text-align:right; display: inherit;">Enter Book Price</span>
+                      </label>';
+                echo '<br><br>';
+                     
+                echo '</div></fieldset>';
+                break;
+            default:
+                break;
+        }
+    }
+
+ 
+add_action('quick_edit_custom_box',  'wpar_add_quick_edit', 10, 2);
 
 
+add_action( 'save_post', 'qedit_save_post', 10, 2 );
+function qedit_save_post( $post_id, $post ) {
+    $price = isset($_POST['price']) ? $_POST['price']:'';
+	update_post_meta( $post_id, 'price', $price );
+}
 
 
+function wpar_quick_edit_js()
+    {
+        $current_screen = get_current_screen();
+        if ($current_screen->id != 'edit-book' || $current_screen->post_type !== 'book')
+            return;
+        wp_enqueue_script('jquery');
+    ?>
+        <script type="text/javascript">
+            jQuery(function($) {
+                var $wpar_inline_editor = inlineEditPost.edit;
+                inlineEditPost.edit = function(id) {
+                    // call the original WP edit function 
+                    $wpar_inline_editor.apply(this, arguments);
+                    // get the post ID
+                    var $post_id = 0;
+                    if (typeof(id) == 'object') {
+                        $post_id = parseInt(this.getId(id));
+                    }
+                    // if we have our post
+                    if ($post_id != 0) {
+                        // define the edit row
+                        var $edit_row = $('#edit-' + $post_id);
+                        var $post_row = $('#post-' + $post_id);
 
+                        // get the data
+                        var $price = $('.column-price', $post_row).text();
+						var $fvalue = $price.replace('₹ ', '');
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+                        // populate the data
+                        $(':input[name="price"]', $edit_row).val($fvalue);
+                    }
+                }
+            });
+        </script>
+<?php
+    }
+    add_action('admin_print_footer_scripts-edit.php', 'wpar_quick_edit_js');
 ?>

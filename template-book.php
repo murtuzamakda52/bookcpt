@@ -8,26 +8,21 @@
 <div class="main-element">
   <div class="left" style="background-color:#aaa;">
   <input type="text" name="string" id="string"><input type="button" value="search" id="search"><br>
-	  
-	  
-	  
+	 
 	   <div data-role="rangeslider">
         <label for="price-min">Price:</label>
-        <input type="range" class="range-meter" name="price-min" id="min_range" value="200" min="<?php echo $min_value; ?>" max="<?php echo $max_value; ?>">
+        <input type="range" class="range-meter" name="price-min" id="min_range" value="0" min="<?php echo $min_value; ?>" max="<?php echo $max_value; ?>">
         <label for="price-max">Price:</label>
-        <input type="range" class="range-meter" name="price-max" id="max_range" value="800" min="<?php echo $min_value; ?>" max="<?php echo $max_value; ?>">
+        <input type="range" class="range-meter" name="price-max" id="max_range" value="500" min="<?php echo $min_value; ?>" max="<?php echo $max_value; ?>">
       </div>
-	  
-	  
-	  
-	  <div style="display:flex"><input type="range" min="0" step="10" id="price_range"><div class="range"></div><div class="max-text">Max value : <span class="max-value"></span></div></div>
+	 
     <?php 
         $publishers = 'publisher';
         $terms = get_terms( $publishers );
         if($terms){
         $count = count( $terms );
 
-        if ( $count > 0 ): ?>
+        if ( $count > 0 ){?>
             <div class="post-tags">
             <h3>Publishers</h3>
             <?php
@@ -35,13 +30,11 @@
                 $term_link = get_term_link( $term );
                 // echo '<a href="' . $term_link . '" class="tax-filter" title="' . $term->slug . '">' . $term->name . '</a> ';
 
-                echo '<label>'. $term->name.'</label><input type="checkbox" value="'.$term->slug.'" class="publisher filter"><br>';
+                echo '<label>'. $term->name.'<input type="checkbox" value="'.$term->slug.'" class="publisher filter"></label><br>';
             } ?>
             </div>
-        <?php endif; 
-
+        <?php }; 
     }
-
     else{
         echo "<h3 class='post-tags'>Publishers</h3><br><h4 class='post-tags'>No Publishers found</h4><br><hr>";
     }
@@ -63,7 +56,7 @@
                 $term_link = get_term_link( $term );
                 // echo '<a href="' . $term_link . '" class="tax-filter" title="' . $term->slug . '">' . $term->name . '</a> ';
 
-                echo '<label>'. $term->name.'</label><input type="checkbox" value="'.$term->slug.'" class="author filter"><br>';
+                echo '<label>'. $term->name.'<input type="checkbox" value="'.$term->slug.'" class="author filter"></label><br>';
             } ?>
             </div>
         <?php endif; } 
@@ -88,7 +81,7 @@
      if ( $query->have_posts() ): ?>
         <div class="tagged-posts">
             <?php while ( $query->have_posts() ) : $query->the_post(); ?>
-            <div class="single-portfolio" data-page="1">
+            <div class="single-portfolio" data-page="1" data-maxpage="<?php echo $query->max_num_pages; ?>">
             <h2><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
             <?php the_excerpt(); ?>
             <?php $value = get_post_custom(get_the_ID());

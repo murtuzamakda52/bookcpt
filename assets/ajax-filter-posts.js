@@ -1,17 +1,13 @@
 jQuery(document).ready(function($) {
 	
-	
-    var big_value_array = [];
-    $('.price').each(function(){
-       var price_range = parseInt($(this).text());
-		big_value_array.push(price_range);
-		var bigest_value = Math.max.apply(Math,big_value_array);
-		jQuery('#price_range').attr('max',bigest_value);
-		jQuery('.max-value').text(bigest_value);
-	
-	});
-	
-	
+	var loadmore = $('.single-portfolio').attr('data-maxpage');
+                if(parseInt(loadmore) > 1)
+                {
+                   jQuery('#loadmore').css('display','block');
+                }
+                else{
+                   jQuery('#loadmore').css('display','none');
+                }
 	
     var selecetd_author = [];
     var selecetd_publisher = [];
@@ -53,14 +49,6 @@ jQuery(document).ready(function($) {
                 // Restore div visibility
                 $('.tagged-posts').fadeIn();
                 var loadmore = $('.single-portfolio').attr('data-maxpage');
-                var big_value_array = [];
-				$('.price').each(function(){
-					var price_range = parseInt($(this).text());
-					big_value_array.push(price_range);
-					var bigest_value = Math.max.apply(Math,big_value_array);
-					jQuery('#price_range').attr('max',bigest_value);
-					jQuery('.max-value').text(bigest_value);
-				});
                 if(parseInt(loadmore) > 1)
                 {
                    jQuery('#loadmore').css('display','block');
@@ -77,7 +65,6 @@ jQuery(document).ready(function($) {
      $( document ).on( "click", "#loadmore", function() {
 
        var page_no = $('.single-portfolio').attr('data-page');
-       console.log(page_no);
 
         if ($(this).hasClass("author")) {
         selecetd_author.push($(this).val());
@@ -102,14 +89,6 @@ jQuery(document).ready(function($) {
                 $('.tagged-posts').fadeIn();
                 $('.single-portfolio').attr('data-page',parseInt(page_no)+1);
                var loadmore = $('.single-portfolio').attr('data-maxpage');
-               var big_value_array = [];
-				$('.price').each(function(){
-					var price_range = parseInt($(this).text());
-					big_value_array.push(price_range);
-					var bigest_value = Math.max.apply(Math,big_value_array);
-					jQuery('#price_range').attr('max',bigest_value);
-					jQuery('.max-value').text(bigest_value);
-				});
                 if(parseInt(loadmore) > 1)
                 {
                    jQuery('#loadmore').css('display','block');
@@ -151,17 +130,22 @@ jQuery(document).ready(function($) {
     });
 
 
- jQuery( document ).on( "change", ".range-meter", function(){
-
+jQuery( document ).on( "change", ".range-meter", function(){
     var min_value = parseInt($('#min_range').val());
 	var max_value = parseInt($('#max_range').val());
+	$('.single-portfolio').show();
     $('.price').each(function(){
        var price_range = parseInt($(this).text());
        $(this).closest('.single-portfolio').show();
-		
-       if(price_range <= min_value && price_range <= max_value-10 )
-        $(this).closest('.single-portfolio').hide();
-		jQuery('#loadmore').css('display','none');
+       if(price_range >= min_value   && price_range >= max_value)
+{
+		console.log('run');
+		console.log('value');
+		console.log(price_range);
+		console.log($(this).closest('.single-portfolio'));
+		$(this).closest('.single-portfolio').hide();
+		jQuery('#loadmore').hide();
+}
        });
 });
 
