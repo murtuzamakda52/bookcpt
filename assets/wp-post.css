@@ -1,186 +1,197 @@
 .qa-title{
-   font-size: 40px;
-   text-align: center;
-   padding: 10px 0px;
-   height: 200px;
-   color: white;
-   background-color: #253372;
+  font-size: 40px;
+  text-align: center;
+  padding: 10px 0px;
+  height: 200px;
+  color: white;
+  background-color: #253372;
 }
 
 .qa-question{
-   margin-right: 15%;
-   margin-left: 15%;
-   margin-top: 40px;
-   margin-bottom: 40px;
+  margin-right: 15%;
+  margin-left: 15%;
+  margin-top: 40px;
+  margin-bottom: 40px;
 }
 
 .qa-answer{
-   margin-right: 15%;
-   margin-left: 15%;
-   margin-top: 40px;
-   margin-bottom: 40px;
+  margin-right: 15%;
+  margin-left: 15%;
+  margin-top: 40px;
+  margin-bottom: 40px;
 }
 .braker{
-   background-color: #b30000;
-   height: 40px;
+  background-color: #b30000;
+  height: 40px;
 }
 .braker > center{
-   color: white;
-   font-size: 25px;
-   font-weight: 600;
+  color: white;
+  font-size: 25px;
+  font-weight: 600;
 }
 
 pre{
-   background: #f8f8f8;
-   padding: 15px !important;
-   overflow: hidden !important;
+  background: #f8f8f8;
+  padding: 15px !important;
+  overflow: hidden !important;
 }
 
 pre > code{
-   font-size: medium;
-   overflow: hidden !important;
+  font-size: medium;
+  overflow: hidden !important;
 }
 
 body{
-   background: white !important;
+  background: white !important;
 }
 
 .post-tags{
-    text-align: center;
+   text-align: center;
 }
 a{
-    border-bottom: 0px !important;
+   border-bottom: 0px !important;
 }
 .post-tags > a{
-    padding: 10px;
-    background-color: #253372;
-    border-radius: 25px;
-    margin-left: 10px;
-    color: white;
+   padding: 10px;
+   background-color: #253372;
+   border-radius: 25px;
+   margin-left: 10px;
+   color: white;
 }
 .post-tags > a:hover{
-   background-color: #b30000 !important;
-   color: white;
+  background-color: #b30000 !important;
+  color: white;
 }
 .post-tags > a:focus{
-   color: white;
+  color: white;
 }
 .single-post{
-    margin-bottom: 30px;
-    padding: 20px;
+   margin-bottom: 30px;
+   padding: 20px;
 }
 .single-post:hover{
-    background-color: #999;
+   background-color: #999;
 }
 .single-post > h2 >a:hover{
-    color: white !important;
+   color: white !important;
 }
 .center-text{
-    text-align: center;
+   text-align: center;
 }
 .pagination{
-    text-align: center;
-    margin-top: 50px;
+   text-align: center;
+   margin-top: 50px;
 }
 .pagination > a{
-    margin: 30px;
-    background-color: #253372;
-    border-radius: 25px;
-    padding: 10px;
-    color: white;
+   margin: 30px;
+   background-color: #253372;
+   border-radius: 25px;
+   padding: 10px;
+   color: white;
 }
 .current{
-    margin: 30px;
-    background-color: #b30000 !important;
-    color: white;
-    border-radius: 25px;
-    padding: 10px;
+   margin: 30px;
+   background-color: #b30000 !important;
+   color: white;
+   border-radius: 25px;
+   padding: 10px;
 }
 .tagged-posts{
-	width:60%;
-	margin:auto;
+ width:60%;
+ margin:auto;
 }
 * {
-  box-sizing: border-box;
+ box-sizing: border-box;
 }
 /* Style the header */
 .header {
-  grid-area: header;
-  background-color: #f1f1f1;
-  padding: 30px;
-  text-align: center;
-  font-size: 35px;
+ grid-area: header;
+ background-color: #f1f1f1;
+ padding: 30px;
+ text-align: center;
+ font-size: 35px;
 }
 /* The grid container */
 .main-element {
-  display: grid;
-  grid-template-areas: 
-    'header header header header header header' 
-    'left middle middle middle middle middle' 
-    'footer footer footer footer footer footer';
-  /* grid-column-gap: 10px; - if you want gap between the columns */
+ display: grid;
+ grid-template-areas: 
+   'header header header header header header' 
+   'left middle middle middle middle middle' 
+   'footer footer footer footer footer footer';
+ /* grid-column-gap: 10px; - if you want gap between the columns */
 } 
 
 .left,
 .middle,
 .right {
-  padding: 10px;
-  width:100% !important;
-  /* Should be removed. Only for demonstration */
+ padding: 10px;
+ width:100% !important;
+ /* Should be removed. Only for demonstration */
 }
 /* Style the left column */
 .left {
-  grid-area: left;
+ grid-area: left;
 }
 #price_range{
-    width: 60%;
+   width: 60%;
 }
 
 /* Style the middle column */
 .middle {
-  grid-area: middle;
+ grid-area: middle;
 }
 
 /* Style the right column */
 .right {
-  grid-area: right;
+ grid-area: right;
 }
 .filter{
-  margin-left: 10px;
+ margin-left: 10px;
 }
 .entry-content > *:not(.alignwide):not(.alignfull):not(.alignleft):not(.alignright):not(.wp-block-separator):not(.woocommerce){
-    margin-left: 0px !important;
-    margin-right: 0px !important;
-    max-width: 100% !important;
+   margin-left: 0px !important;
+   margin-right: 0px !important;
+   max-width: 100% !important;
 }
 
 /* Style the footer */
 .footer {
-  grid-area: footer;
-  background-color: #f1f1f1;
-  padding: 10px;
-  text-align: center;
+ grid-area: footer;
+ background-color: #f1f1f1;
+ padding: 10px;
+ text-align: center;
 }
 .range{
-	margin-left:20px;
-	margin-top:4px;
+ margin-left:20px;
+ margin-top:4px;
 }
 .max-value{
-	margin-top:4px;
+ margin-top:4px;
 }
 .max-text{
-	margin-top:4px;
-	margin-left:10px;
+ margin-top:4px;
+ margin-left:10px;
 }
+.single-portfolio{
+ display:flex;
+ margin:20px;
+}
+.ui-page-theme-a a, html .ui-bar-a a, html .ui-body-a a, html body .ui-group-theme-a a{
+  color: black !important; 
+    font-weight: 400 !important; 
+}
+
+
+
 
 /* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
 @media (max-width: 600px) {
-  .main-element {
-    grid-template-areas: 
-      'header header header header header header' 
-      'left left left left left left' 
-      'middle middle middle middle middle middle' 
-      'right right right right right right' 
-      'footer footer footer footer footer footer';
-  }
+ .main-element {
+   grid-template-areas: 
+     'header header header header header header' 
+     'left left left left left left' 
+     'middle middle middle middle middle middle' 
+     'right right right right right right' 
+     'footer footer footer footer footer footer';
+ }
 }

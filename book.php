@@ -278,12 +278,18 @@ function ajax_filter_get_posts() {
 
   if ( $query->have_posts() ) : while ( $query->have_posts() ) : $query->the_post(); ?>
     <div class="single-portfolio" data-page="<?php echo $page_no; ?>" data-maxpage="<?php echo $query->max_num_pages; ?>">
-    <h2><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
-    <?php the_excerpt(); ?>
-     <?php $value=get_post_custom($post->ID );
+    <?php
+			if(has_post_thumbnail()){
+            the_post_thumbnail(array(100, 100)); ?>
+            <?php
+            }
+            else{
+            echo '<img src="'.plugins_url('/assets/placeholderimage.jpg',__FILE__).'" width="100" height="100" style="height:100px !important">';
+            }
+			$value = get_post_custom(get_the_ID());
            $price = $value['price'][0];
-           echo '₹ <span class="price">'.$price.'</span>';
-           ?>
+			?>
+            <h2><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a><h5><?php the_excerpt(); ?></h5> <?php echo '₹ <span class="price">'.$price.'</span>';?></h2>
     </div>
 
   <?php endwhile; ?>
