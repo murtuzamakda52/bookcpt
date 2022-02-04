@@ -1,16 +1,17 @@
 <?php
+/**
+ * Achive-search template for book cpt.
+ **/
+
 get_header();
 
 
 global $wp_query;
-if (  $wp_query->max_num_pages > 1 ) : ?>
+if ( $wp_query->max_num_pages > 1 ) :?>
+	<button id = "load-more" class = "btn">Load More</button>
+	<?php
+endif;
 
-   <button id="load-more" class="btn">Load More</button>
 
-<?php endif;
-
-    
 get_footer();
 ?>
-
- 
