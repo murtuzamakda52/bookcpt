@@ -15,11 +15,12 @@
  * Author URI: https://www.upwork.com/freelancers/~018f06972fe4607ad0
  * License: GPL v3
  * License URI: https://www.gnu.org/licenses/gpl-3.0.html
+ * Text Domain: bmaster
  **/
 function ajax_filter_posts_scripts() {
 	wp_register_style( 'post-style', plugins_url( '/assets/wp-post.css', __FILE__ ), array(), '2.0' );
 	wp_enqueue_style( 'post-style' );
-	wp_register_script( 'afp_script', plugins_url( '/assets/ajax-filter-posts.js', __FILE__ ), array( 'jquery' ), '', true );
+	wp_register_script( 'afp_script', plugins_url( '/assets/ajax-filter-posts.js', __FILE__ ), array( 'jquery' ), '1.0.0', true );
 	wp_enqueue_script( 'afp_script' );
 	wp_localize_script(
 		'afp_script',
@@ -30,26 +31,30 @@ function ajax_filter_posts_scripts() {
 		)
 	);
 
-	wp_register_style( 'jquery-mobile-style', 'https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css' );
+	wp_register_style( 'jquery-mobile-style', 'https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css', array(), '2.0' );
 	wp_enqueue_style( 'jquery-mobile-style' );
-	wp_register_script( 'jquery-mobile-script', 'https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js', array( 'jquery' ), '', true );
+	wp_register_script( 'jquery-mobile-script', 'https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js', array( 'jquery' ), '1.0.0', true );
 	wp_enqueue_script( 'jquery-mobile-script' );
 
 }
 add_action( 'wp_enqueue_scripts', 'ajax_filter_posts_scripts', 100 );
 
-add_action( 'init', 'create_custom_post_type_book' );
-add_action( 'init', 'add_publisher_taxonomy_to_post' );
-add_action( 'init', 'add_author_taxonomy_to_post' );
-add_filter( 'use_block_editor_for_post_type', 'prefix_disable_gutenberg_for_book', 10, 2 );
+add_action( 'init', 'bcpt_create_custom_post_type_book' );
+add_action( 'init', 'bcpt_add_publisher_taxonomy_to_post' );
+add_action( 'init', 'bcpt_add_author_taxonomy_to_post' );
+add_filter( 'use_block_editor_for_post_type', 'bcpt_disable_gutenberg_for_book', 10, 2 );
+
+define( 'BCPT_BASE_FILE', __FILE__ );
 
 /**
  * Disable gutenberg editor for this cpt.
  *
+ * @param boolean $current_status pass status of editor. and post type.
+ * @param object  $post_type      and post type.
  * @return response of all filterd data.
  */
-function prefix_disable_gutenberg_for_book( $current_status, $post_type ) {
-	if ( $post_type === 'book' ) {
+function bcpt_disable_gutenberg_for_book( $current_status, $post_type ) {
+	if ( 'book' === $post_type ) {
 		return false;
 	}
 	return $current_status;
@@ -58,7 +63,7 @@ function prefix_disable_gutenberg_for_book( $current_status, $post_type ) {
 /**
  * Function for init book cpt.
  */
-function create_custom_post_type_book() {
+function bcpt_create_custom_post_type_book() {
 	$supports = array(
 		'title', // post title.
 		'editor', // post content.
@@ -115,7 +120,7 @@ function create_custom_post_type_book() {
 /**
  * Create a function that will attach taxonomy to the 'book' post type.
  */
-function add_publisher_taxonomy_to_post() {
+function bcpt_add_publisher_taxonomy_to_post() {
 
 	// set the name of the taxonomy.
 	$taxonomy1 = 'publisher';
@@ -158,7 +163,7 @@ function add_publisher_taxonomy_to_post() {
 /**
  * Create a function that will attach taxonomy to the 'book' post type.
  */
-function add_author_taxonomy_to_post() {
+function bcpt_add_author_taxonomy_to_post() {
 	// set the name of the taxonomy.
 	$taxonomy2 = 'auth';
 	// set the post types for the taxonomy.
@@ -199,6 +204,8 @@ function add_author_taxonomy_to_post() {
 add_filter( 'template_include', 'my_book_templates' );
 /**
  * Add custom template (single.php / achive.php) from plugin dir.
+ *
+ * @param string $template pass template default path/name.
  */
 function my_book_templates( $template ) {
 	$post_types = array( 'book' );
@@ -215,78 +222,88 @@ function my_book_templates( $template ) {
 
 /**
  * Function for choose template.
+ *
+ * @param string $template pass template default path/name.
  */
-function template_chooser( $template ) {
+function bcpt_template_chooser( $template ) {
 	global $wp_query;
 	$post_type = get_query_var( 'post_type' );
-	if ( $wp_query->is_search && $post_type == 'book' ) {
-		return plugin_dir_path( __FILE__ ) . 'archive-search.php';  // redirect
+	if ( 'book' === $post_type && $wp_query->is_search ) {
+		return plugin_dir_path( __FILE__ ) . 'archive-search.php';  // redirect.
 	}
 	return $template;
 }
-add_filter( 'template_include', 'template_chooser' );
-add_action( 'admin_init', 'add_metabox_post_price_widget' );
-add_action( 'save_post', 'save_metabox_post_price_widget' );
+add_filter( 'template_include', 'bcpt_template_chooser' );
+add_action( 'admin_init', 'bcpt_add_metabox_price_widget' );
+add_action( 'save_post', 'bcpt_save_metabox_price_widget' );
+
 /**
- * Funtion to add a meta box to enable Answer widget on posts.
+ * Funtion to add a meta box to enable price widget on book posts.
  */
-function add_metabox_post_price_widget() {
-	add_meta_box( 'book_price', 'Price', 'enable_post_price_widget', 'book', 'normal', 'high' ); /* replace "post" with your custom post value(eg: "motors"). */
+function bcpt_add_metabox_price_widget() {
+	// replace "post" with your custom post value(eg: "motors").
+	add_meta_box( 'book_price', 'Price', 'bcpt_enable_post_price_widget', 'book', 'normal', 'high' );
 }
 
 /**
- * Add price field to book cpt.
+ * Add price field to edit book page.
  */
-function enable_post_price_widget() {
+function bcpt_enable_post_price_widget() {
 	wp_nonce_field( 'my_custom_page', '_my_custom_page' );
 	global $post;
 	$image = get_post_custom( $post->ID );
 	$price = $image ? $image['price'][0] : '';
-	echo "<input type = 'number' name = 'price' value = '" . $price . "' required>";
+	echo "<input type = 'number' name = 'price' value = '" . esc_html( $price ) . "' required>";
 }
 
-/*
-* Save the meta box value of Answer widget on posts.
-*/
-function save_metabox_post_price_widget( $post_id ) {
-	if ( isset( $_POST['_my_custom_page'] ) ) {
-		if ( ! wp_verify_nonce( $_POST['_my_custom_page'], 'my_custom_page' ) ) {
-			return $post_id; }
-		$price = isset( $_POST['price'] ) ? $_POST['price'] : '';
-		update_post_meta( $post_id, 'price', $price );
+/**
+ * Save the price meta box value  from edit book.
+ *
+ * @param int $post_id pass post id.
+ */
+function bcpt_save_metabox_price_widget( $post_id ) {
+	$my_custom_page = filter_input( INPUT_POST, '_my_custom_page', FILTER_SANITIZE_STRING );
+	$price          = filter_input( INPUT_POST, 'price', FILTER_SANITIZE_NUMBER_INT );
+	if ( isset( $my_custom_page ) ) {
+		if ( ! wp_verify_nonce( $my_custom_page, 'my_custom_page' ) ) {
+			return $post_id;
+		}
+		if ( $price ) {
+			update_post_meta( $post_id, 'price', $price );
+		}
 	}
 }
-
 /**
  * Add search form.
  */
 function searchform() {
 	return include plugin_dir_path( __FILE__ ) . 'template-book.php';
 }
-
 add_shortcode( 'search', 'searchform' );
 
 /**
  * Function for filter post.
- *
- * @return response of all filterd data.
  */
 function ajax_filter_get_posts() {
 
-	$authors = $_POST['author'];
-	$paged   = ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1;
+	$page_no      = filter_input( INPUT_POST, 'page_no', FILTER_SANITIZE_STRING );
+	$paged        = ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1;
+	$afp_nonce    = filter_input( INPUT_POST, 'afp_nonce', FILTER_SANITIZE_STRING );
+	$posted_array = filter_input_array( INPUT_POST );
 
 	// Verify nonce.
-	if ( ! isset( $_POST['afp_nonce'] ) || ! wp_verify_nonce( $_POST['afp_nonce'], 'afp_nonce' ) ) {
+	if ( ! isset( $afp_nonce ) || ! wp_verify_nonce( $afp_nonce, 'afp_nonce' ) ) {
 		die( 'Permission denied' );
 	}
-
-	$publishers = $_POST['publishers'];
-
-	$page_no        = $_POST['page'];
-	$search         = $_POST['search'];
-	$post_per_pages = esc_attr( get_option( 'post_per_page' ) ) ? esc_attr( get_option( 'post_per_page' ) ) : '6';
-	// WP Query
+	if ( isset( $_POST['publishers'] ) ) {
+		$publishers = $posted_array['publishers'];
+	}
+	if ( isset( $_POST['author'] ) ) {
+		$authors = $posted_array['author'];
+	}
+	$search         = filter_input( INPUT_POST, 'search', FILTER_SANITIZE_STRING );
+	$post_per_pages = wp_unslash( get_option( 'post_per_page' ) ) ? wp_unslash( get_option( 'post_per_page' ) ) : '6';
+	// WP Query.
 	$args = array(
 		'publisher'      => $publishers,
 		'auth'           => $authors,
@@ -302,19 +319,19 @@ function ajax_filter_get_posts() {
 	if ( $query->have_posts() ) :
 		while ( $query->have_posts() ) :
 			$query->the_post(); ?>
-	<div class="single-portfolio" data-page="<?php echo $page_no; ?>" data-maxpage="<?php echo $query->max_num_pages; ?>">
+	<div class="single-portfolio" data-page="<?php echo esc_html( $page_no ); ?>" data-maxpage="<?php echo esc_html( $query->max_num_pages ); ?>">
 			<?php
 			if ( has_post_thumbnail() ) {
 				the_post_thumbnail( array( 100, 100 ) );
 				?>
 				<?php
 			} else {
-				echo '<img src="' . plugins_url( '/assets/placeholderimage.jpg', __FILE__ ) . '" width="100" height="100" style="height:100px !important">';
+				echo '<img src="' . esc_url( plugins_url( '/assets/placeholderimage.jpg', __FILE__ ) ) . '" width="100" height="100" style="height:100px !important">';
 			}
 			$value = get_post_custom( get_the_ID() );
 			$price = $value['price'][0];
 			?>
-<h2><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a><h5><?php the_excerpt(); ?></h5> <?php echo '₹ <span class="price">' . $price . '</span>'; ?></h2>
+<h2><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a><h5><?php the_excerpt(); ?></h5> <?php echo '₹ <span class="price">' . esc_html( $price ) . '</span>'; ?></h2>
 </div>
 
 <?php endwhile; ?>
@@ -329,22 +346,29 @@ add_action( 'wp_ajax_filter_posts', 'ajax_filter_get_posts' );
 add_action( 'wp_ajax_nopriv_filter_posts', 'ajax_filter_get_posts' );
 
 /**
- * Filter Price.
+ * Heading for admin table in editbook page.
  *
+ * @param string $columns pass column name.
  * @return response of all filterd data.
  */
-function smashing_filter_posts_columns( $columns ) {
-	$columns['price'] = __( 'Price', 'smashing' );
+function bcpt_price_column_in_admin_table_heading( $columns ) {
+	$columns['price'] = __( 'Price' );
 	return $columns;
 }
-add_filter( 'manage_book_posts_columns', 'smashing_filter_posts_columns' );
+add_filter( 'manage_book_posts_columns', 'bcpt_price_column_in_admin_table_heading' );
+add_action( 'manage_book_posts_custom_column', 'bcpt_price_column_in_admin_table_show', 10, 2 );
 
-add_action( 'manage_book_posts_custom_column', 'smashing_realestate_column', 10, 2 );
-function smashing_realestate_column( $column, $post_id ) {
-	// Image column
+/**
+ * Edit price shows in admin table book edit page.
+ *
+ * @param string $column pass column name.
+ * @param string $post_id post type which post type you want to add.
+ */
+function bcpt_price_column_in_admin_table_show( $column, $post_id ) {
+	// Image column.
 	$price = get_post_meta( $post_id, 'price', true );
 	if ( ! $price ) {
-		_e( 'n/a' );
+		esc_html_e( 'n/a' );
 	} else {
 		echo '₹ ' . number_format( $price, 0, '.', ',' );
 	}
@@ -352,9 +376,9 @@ function smashing_realestate_column( $column, $post_id ) {
 
 
 /**
- * Function for create new page and add append shortcode.
+ * Function for create new page and add append shortcode of search page.
  */
-function create_page_and_add_shortcode() {
+function bcpt_create_page_and_add_shortcode() {
 	$post_details = array(
 		'post_title'   => 'Book Filter Search page',
 		'post_content' => '[search]',
@@ -365,13 +389,13 @@ function create_page_and_add_shortcode() {
 	wp_insert_post( $post_details );
 }
 
-register_activation_hook( __FILE__, 'create_page_and_add_shortcode' );
+register_activation_hook( __FILE__, 'bcpt_create_page_and_add_shortcode' );
 
 
 /**
- * Function for remove extra meta box from this cpt.
+ * Function for remove extra meta box from book cpt edit page.
  */
-function remove_my_post_metaboxes() {
+function bcpt_remove_books_extra_metaboxes() {
 	remove_meta_box( 'authordiv', 'book', 'normal' ); // Author Metabox.
 	remove_meta_box( 'postcustom', 'book', 'normal' ); // Custom Fields Metabox.
 	remove_meta_box( 'commentstatusdiv', 'book', 'normal' ); // Comments Status Metabox.
@@ -380,22 +404,22 @@ function remove_my_post_metaboxes() {
 	remove_meta_box( 'revisionsdiv', 'book', 'normal' ); // Revisions Metabox.
 
 }
-add_action( 'admin_menu', 'remove_my_post_metaboxes' );
+add_action( 'admin_menu', 'bcpt_remove_books_extra_metaboxes' );
 
 
 /**
  * Add Book option to admin menu page.
  */
-function myplugin_menu() {
-	add_submenu_page( 'edit.php?post_type=book', 'Book Filter Option', 'Book Option', 'add_users', __FILE__, 'book_filter_custom_options', 4 );
+function bcpt_option_menu_page() {
+	add_submenu_page( 'edit.php?post_type=book', 'Book Filter Option', 'Book Option', 'add_users', BCPT_BASE_FILE, 'bcpt_book_filter_custom_options', 4 );
 }
-add_action( 'admin_menu', 'myplugin_menu' );
+add_action( 'admin_menu', 'bcpt_option_menu_page' );
 
 
 /**
- * Setting's page html.
+ * Book option page's view.
  */
-function book_filter_custom_options() {
+function bcpt_book_filter_custom_options() {
 	?>
 <form method = "post" action = "options.php">
 	<?php
@@ -426,9 +450,12 @@ function register_book_filter_value() {
 }
 
 /**
- * Html edit price text box append in admin side.
+ * Edit price text box append in quick edit.
+ *
+ * @param string $column_name pass column name.
+ * @param string $post_type post type which post type you want to add.
  */
-function wpar_add_quick_edit( $column_name, $post_type ) {
+function bcpt_add_quick_edit( $column_name, $post_type ) {
 	switch ( $column_name ) {
 		case 'price':
 			echo '<fieldset class="inline-edit-col-right" style="border: 1px solid #dddddd;">
@@ -436,27 +463,31 @@ function wpar_add_quick_edit( $column_name, $post_type ) {
                         <div class="inline-edit-col">';
 			wp_nonce_field( 'wpar_q_edit_nonce', 'wpar_nonce' );
 			echo '<label class="alignleft" style="width: 100%;">
-                        <span class="title">' . __( 'Price', 'your-textdomain' ) . '</span>
-                        <span class="input-text-wrap"><input type="number" name="' . $column_name . '" value="" style="width: 100%;"></span>
-                        <span style="font-style: italic;color:#999999; text-align:right; display: inherit;">Enter Book Price</span>
+                        <span class="title">' . esc_html( 'Price' ) . '</span>
+                        <span class="input-text-wrap"><input type="number" name="' . esc_html( $column_name ) . '" value="" style="width: 100%;"></span>
+                        <span style="font-style: italic;color:#999999; text-align:right; display: inherit;">' . esc_html( 'Enter Book Price' ) . '</span>
                       </label>';
 			echo '<br><br>';
-
 			echo '</div></fieldset>';
 			break;
 		default:
 			break;
 	}
 }
-add_action( 'quick_edit_custom_box', 'wpar_add_quick_edit', 10, 2 );
-add_action( 'save_post', 'qedit_save_post', 10, 2 );
+add_action( 'quick_edit_custom_box', 'bcpt_add_quick_edit', 10, 2 );
+add_action( 'save_post', 'bcpt_edit_save_price', 10, 2 );
 
 /**
  * Function for save price.
+ *
+ * @param int    $post_id pass post id & post.
+ * @param object $post    pass post object.
  */
-function qedit_save_post( $post_id, $post ) {
-	$price = isset( $_POST['price'] ) ? $_POST['price'] : '';
-	update_post_meta( $post_id, 'price', $price );
+function bcpt_edit_save_price( $post_id, $post ) {
+	$price = filter_input( INPUT_POST, 'price', FILTER_SANITIZE_NUMBER_INT );
+	if ( $price ) {
+		update_post_meta( $post_id, 'price', $price );
+	}
 }
 
 /**
@@ -464,7 +495,7 @@ function qedit_save_post( $post_id, $post ) {
  */
 function wpar_quick_edit_js() {
 		$current_screen = get_current_screen();
-	if ( $current_screen->id != 'edit-book' || $current_screen->post_type !== 'book' ) {
+	if ( 'edit-book' !== $current_screen->id || 'book' !== $current_screen->post_type ) {
 		return;
 	}
 		wp_enqueue_script( 'jquery' );

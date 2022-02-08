@@ -23,20 +23,20 @@ get_header();
 		</div>
 	<?php
 		$publishers = 'publisher';
-		$terms      = get_terms( $publishers );
-	if ( $terms ) {
-		$count = count( $terms );
+		$books      = get_terms( $publishers );
+	if ( $books ) {
+		$count = count( $books );
 
 		if ( $count > 0 ) {
 			?>
 			<div class="post-tags">
 			<h3>Publishers</h3>
 			<?php
-			foreach ( $terms as $term ) {
-				$term_link = get_term_link( $term );
+			foreach ( $books as $book ) {
+				$term_link = get_term_link( $book );
 				// echo '<a href="' . $term_link . '" class="tax-filter" title="' . $term->slug . '">' . $term->name . '</a> ';.
 
-				echo '<label>' . esc_html( $term->name ) . '<input type="checkbox" value="' . esc_html( $term->slug ) . '" class="publisher filter"></label><br>';
+				echo '<label>' . esc_html( $book->name ) . '<input type="checkbox" value="' . esc_html( $book->slug ) . '" class="publisher filter"></label><br>';
 			}
 			?>
 			</div>
@@ -46,19 +46,19 @@ get_header();
 		echo "<h3 class='post-tags'>Publishers</h3><br><h4 class='post-tags'>No Publishers found</h4><br><hr>";
 	}
 		$authors = 'auth';
-		$terms   = get_terms( $authors );
-	if ( $terms ) {
-		$count = count( $terms );
+		$books   = get_terms( $authors );
+	if ( $books ) {
+		$count = count( $books );
 		if ( $count > 0 ) :
 			?>
 			<div class="post-tags">
 			<h3>Authors</h3>
 				<?php
-				foreach ( $terms as $term ) {
-					$term_link = get_term_link( $term );
+				foreach ( $books as $book ) {
+					$term_link = get_term_link( $book );
 					// echo '<a href="' . $term_link . '" class="tax-filter" title="' . $term->slug . '">' . $term->name . '</a> ';.
 
-					echo '<label>' . esc_html( $term->name ) . '<input type="checkbox" value="' . esc_html( $term->slug ) . '" class="author filter"></label><br>';
+					echo '<label>' . esc_html( $book->name ) . '<input type="checkbox" value="' . esc_html( $book->slug ) . '" class="author filter"></label><br>';
 				}
 				?>
 			</div>
@@ -70,13 +70,13 @@ get_header();
 	</div>
 <div class="middle" style="background-color:#ccc;">
 	<?php
-	$paged          = ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1;
+	$pageno         = ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1;
 	$post_per_pages = esc_attr( get_option( 'post_per_page' ) ) ? esc_attr( get_option( 'post_per_page' ) ) : '6';
 	$args           = array(
 		'post_type'      => 'book',
 		'posts_per_page' => $post_per_pages,
 		'order'          => 'ASC',
-		'paged'          => $paged,
+		'paged'          => $pageno,
 	);
 		$query      = new WP_Query( $args );
 	if ( $query->have_posts() ) :
