@@ -144,22 +144,15 @@ jQuery(document).ready(function($) {
 
 
 jQuery( document ).on( "change", ".range-meter", function(){
+    jQuery('.single-portfolio').css('display','none');
     var min_value = parseInt($('#min_range').val());
 	var max_value = parseInt($('#max_range').val());
-	$('.single-portfolio').show();
     $('.price').each(function(){
        var price_range = parseInt($(this).text());
-       $(this).closest('.single-portfolio').show();
        if(price_range >= min_value && price_range <= max_value)
-       
-{
-		console.log('run');
-		console.log('value');
-		console.log(price_range);
-		console.log($(this).closest('.single-portfolio'));
-		$(this).closest('.single-portfolio').hide();
-		jQuery('#loadmore').hide();
-}
+        {
+            jQuery(this).closest('.single-portfolio').css('display','flex');
+        }
        });
 });
 
