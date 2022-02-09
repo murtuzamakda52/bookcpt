@@ -150,7 +150,8 @@ jQuery( document ).on( "change", ".range-meter", function(){
     $('.price').each(function(){
        var price_range = parseInt($(this).text());
        $(this).closest('.single-portfolio').show();
-       if(price_range >= min_value   && price_range >= max_value)
+       if(price_range >= min_value && price_range <= max_value)
+       
 {
 		console.log('run');
 		console.log('value');
